@@ -1,0 +1,7 @@
+*1* Bedrooms:
+5 category, 1 to 5,
+unbalanced categories
+missing values: 86
+I belive no outlier exist
+
+*2* Bathrooms:
