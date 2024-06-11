@@ -28,10 +28,14 @@ class EDA:
     def __init__(self, data):
         self.data = data
 
+    def statistic_print(self, col):
+        print(self.data[col].describe())
+
     def visual_missing_value(self, col=None):
         plt.figure(figsize=(14, 12))
         if col:
             sns.heatmap(self.data[col].isnull().values[:, np.newaxis], cbar=False, cmap='viridis')
+            print(f'Number of missing values: {self.data[col].isnull().value_counts()}')
         else:
             sns.heatmap(self.data.isnull(), cbar=False, cmap='viridis')
         plt.xticks(rotation=60, ha='right', fontsize=14)
@@ -40,7 +44,6 @@ class EDA:
         plt.show()
 
     def plot_boxplot(self, col=None):
-        print('enter')
         plt.figure(figsize=(14, 12))
         if col:
             sns.boxplot(data=self.data, x=col)
@@ -72,6 +75,7 @@ data.data_desc()
 df = data.get_data()
 
 eda = EDA(df)
-# eda.visual_missing_value()
-# eda.plot_boxplot('Bedrooms')
-eda.plot_count_bar('SquareFootageHouse')
+eda.statistic_print('Bedrooms')
+eda.visual_missing_value('Bedrooms')
+eda.plot_boxplot('Bedrooms')
+eda.plot_count_bar('Bedrooms')
