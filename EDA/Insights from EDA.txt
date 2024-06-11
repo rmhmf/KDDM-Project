@@ -2,6 +2,13 @@
 5 category, 1 to 5,
 unbalanced categories
 missing values: 86
-I belive no outlier exist
+I believe no outlier exist
 
 *2* Bathrooms:
+quite similar to Bedrooms
+5 categories, 1 to 5
+unbalanced categories
+missing values: 243
+I believe no outlier exist
+
+*3* 

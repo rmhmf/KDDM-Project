@@ -23,6 +23,12 @@ class Data:
         print(self.data.head())
 
 
+class PreProc:
+
+    def __init__(self, data):
+        self.data = data
+
+
 class EDA:
 
     def __init__(self, data):
@@ -58,7 +64,7 @@ class EDA:
     def plot_count_bar(self, col):
         plt.figure(figsize=(14, 12))
         if self.data[col].dtype == float:
-            bins = pd.cut(self.data[col], bins=5)
+            bins = pd.cut(self.data[col], bins=10)
             print(bins.value_counts())
             sns.countplot(x=bins)
         else:
@@ -75,7 +81,8 @@ data.data_desc()
 df = data.get_data()
 
 eda = EDA(df)
-eda.statistic_print('Bedrooms')
-eda.visual_missing_value('Bedrooms')
-eda.plot_boxplot('Bedrooms')
-eda.plot_count_bar('Bedrooms')
+col = 'SquareFootageHouse'
+eda.statistic_print(col)
+eda.visual_missing_value(col)
+eda.plot_boxplot(col)
+eda.plot_count_bar(col)
