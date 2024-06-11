@@ -1,14 +1,43 @@
 *1* Bedrooms:
 5 category, 1 to 5,
 unbalanced categories
-missing values: 86
+missing values: 81
 I believe no outlier exist
 
 *2* Bathrooms:
 quite similar to Bedrooms
 5 categories, 1 to 5
 unbalanced categories
-missing values: 243
+missing values: 238
 I believe no outlier exist
 
-*3* 
+*3* SquareFootageHouse
+float data
+contains outliers
+no missing value
+
+*4* Location
+- a missplelling reformed: Suburban Suburbann
+6 missing values
+balanced labels
+
+*5* Age
+158 missing values
+contains outlier
+
+*6* PoolQuality
+Missing variables are meant to be no-pool, but what about the variables that are really missing?
+272 Non value
+clearly a new label should be added but it seems that setting all values to no-pool is not ideal
+
+
+*7* HasPhotovoltaics
+-replace true false with 0 1
+246 missing values
+
+*8* HeatingType
+No missing value
+-changing Electric to Electricity
+-changing Oil Heating to Oil
+seems fine now
+

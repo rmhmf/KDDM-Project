@@ -5,7 +5,6 @@ import seaborn as sns
 
 
 class Data:
-
     def __init__(self):
         self.dir = "data/data_6.csv"
         self.data = self.load_data()
@@ -24,13 +23,38 @@ class Data:
 
 
 class PreProc:
-
     def __init__(self, data):
         self.data = data
+        self.data_cleaning()
+
+    def data_cleaning(self):
+        print(f"{self.data.isnull().all(axis=1).sum()} number of rows has been deleted.")
+        self.remove_empty_rows()
+        self.clean_location()
+        self.clean_hasphotovoltaics()
+        self.clean_heatingtype()
+
+    def remove_empty_rows(self):
+        self.data.dropna(how='all', inplace=True)
+
+    def clean_location(self):
+        location_misspell = {
+            'Suburbann': 'Suburban'
+        }
+        self.data['Location'] = self.data['Location'].replace(location_misspell)
+
+    def clean_hasphotovoltaics(self):
+        self.data['HasPhotovoltaics'] = self.data['HasPhotovoltaics'].map({True: 1, False: 0}).astype(pd.Int64Dtype())
+
+    def clean_heatingtype(self):
+        unified_name = {
+            'Oil Heating': 'Oil',
+            'Electric': 'Electricity',
+        }
+        self.data['HeatingType'] = self.data['HeatingType'].replace(unified_name)
 
 
 class EDA:
-
     def __init__(self, data):
         self.data = data
 
@@ -68,9 +92,10 @@ class EDA:
             print(bins.value_counts())
             sns.countplot(x=bins)
         else:
+            print(self.data[col].value_counts())
             sns.countplot(data=self.data, x=col)
         plt.title(f"Bar chart of column {col}", fontsize=18)
-        plt.xticks(fontsize=14)
+        plt.xticks(fontsize=24)
         plt.ylabel('Values')
         plt.tight_layout(pad=2.0)
         plt.show()
@@ -80,9 +105,13 @@ data = Data()
 data.data_desc()
 df = data.get_data()
 
+preproc = PreProc(df)
+
 eda = EDA(df)
-col = 'SquareFootageHouse'
+col = 'HeatingType'
 eda.statistic_print(col)
 eda.visual_missing_value(col)
 eda.plot_boxplot(col)
 eda.plot_count_bar(col)
+
+
