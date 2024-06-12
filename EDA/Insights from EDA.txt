@@ -3,6 +3,7 @@
 unbalanced categories
 missing values: 81
 I believe no outlier exist
+needs to be normalized
 
 *2* Bathrooms:
 quite similar to Bedrooms
@@ -10,20 +11,25 @@ quite similar to Bedrooms
 unbalanced categories
 missing values: 238
 I believe no outlier exist
+needs to be normalized
 
 *3* SquareFootageHouse
 float data
 contains outliers
 no missing value
+needs to be normalized
 
 *4* Location
 - a missplelling reformed: Suburban Suburbann
 6 missing values
 balanced labels
+needs to be transformed
 
 *5* Age
 158 missing values
 contains outlier
+needs to be normalized
+check age and datesinceforsale for outliers
 
 *6* PoolQuality
 Missing variables are meant to be no-pool, but what about the variables that are really missing?
@@ -41,3 +47,74 @@ No missing value
 -changing Oil Heating to Oil
 seems fine now
 
+*9* HasFiberglass
+No missing value
+a bit unbalanced
+-changing the type from bool to int
+
+*10* IsFurnished
+No missing value
+unbalanced
+-changing the type from bool to int
+
+*11* DateSinceForSale
+-change the date to number of month since the last date
+needs to be normalized
+No missing value
+
+*12* HouseColor
+4 colours
+53 missing value
+
+*13* PreviousOwnerName
+385 missing values
+maybe redundant feature
+
+*14* HasFireplace
+No missing value
+totally unbalanced 992 vs 3
+
+*15* KitchensQuality
+3 categories
+No missing value
+a abit unbalanced
+needs to be transformed
+
+*16* BathroomsQuality
+3 categories
+No missing value
+a abit unbalanced
+needs to be transformed
+
+*17* BedroomsQuality
+3 categories
+No missing value
+a abit unbalanced
+needs to be transformed
+
+*18* LivingRoomsQuality
+3 categories
+No missing value
+a abit unbalanced
+needs to be transformed
+
+*19* SquareFootageGarden
+No missing value
+some low numbers, and a few high numbers
+
+*20* PreviousOwnerRating
+between 1 to 5
+No missing value
+seems a bit skewed
+
+*21* HeatingCosts
+489 missing value
+contains outlier
+
+*22* WindowModelNames
+-set the category to Wood, Steel, Aluminum when it is presented in the text
+it is balanced
+
+*23* Price
+No missing value
+probably contains outlier
