@@ -30,11 +30,26 @@ class EDA:
     def __init__(self, data):
         self.data = data
 
+    def eda_report(self, col):
+        self.statistic_print(col)
+        self.visual_missing_value(col)
+        self.plot_boxplot(col)
+        self.plot_count_bar(col)
+
     def statistic_print(self, col):
         print(self.data[col].describe())
 
+    def plot_corr(self):
+        numerical_data = self.data.select_dtypes(include=['float64', 'Int32', 'Float64'])
+        correlation_matrix = numerical_data.corr().round(3)
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+        plt.tight_layout(pad=2.0)
+        plt.title('Correlation Matrix')
+        plt.show()
+
     def visual_missing_value(self, col=None):
-        plt.figure(figsize=(14, 12))
+        plt.figure(figsize=(12, 10))
         if col:
             sns.heatmap(self.data[col].isnull().values[:, np.newaxis], cbar=False, cmap='viridis')
             print(f'Number of missing values: {self.data[col].isnull().value_counts()}')
@@ -46,7 +61,7 @@ class EDA:
         plt.show()
 
     def plot_boxplot(self, col=None):
-        plt.figure(figsize=(14, 12))
+        plt.figure(figsize=(12, 10))
         if col:
             sns.boxplot(data=self.data, x=col)
         else:
@@ -58,7 +73,7 @@ class EDA:
         plt.show()
 
     def plot_count_bar(self, col):
-        plt.figure(figsize=(14, 12))
+        plt.figure(figsize=(12, 10))
         if self.data[col].dtype == float:
             bins = pd.cut(self.data[col], bins=10)
             print(bins.value_counts())
@@ -72,6 +87,27 @@ class EDA:
         plt.tight_layout(pad=2.0)
         plt.show()
 
+    def statistic_print(self, col1, col2):
+        print(self.data.groupby(col1)[col2].agg(['mean', 'std']))
+
+    def plot_barplot(self, col1, col2):
+        plt.figure(figsize=(12, 10))
+        sns.barplot(x=col1, y=col2, data=self.data, color='skyblue')
+        plt.xlabel(col1)
+        plt.ylabel(col2)
+        plt.title('Bar Plot')
+        plt.show()
+
+    def plot_scatter(self, col1, col2):
+        size_df = self.data.groupby([col1, col2]).size().reset_index(name='counts')
+        sns.scatterplot(x=col1, y=col2, data=size_df, size='counts',
+                        sizes=(size_df['counts'].min(), size_df['counts'].max()))
+        sns.regplot(x=col1, y=col2, data=self.data, scatter=False, color='red')
+        plt.title('Scatter plot')
+        plt.legend(loc='upper right')
+        plt.xlabel(col1)
+        plt.ylabel(col2)
+        plt.show()
 
 data = Data()
 data.data_desc()
@@ -81,8 +117,13 @@ preproc = preproc.PreProc(df)
 data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
-col = 'PoolQuality'
-eda.statistic_print(col)
-eda.visual_missing_value(col)
-eda.plot_boxplot(col)
-eda.plot_count_bar(col)
+eda.visual_missing_value()
+eda.plot_corr()
+# col1 = 'Bedrooms'
+# col2 = 'Location'
+# eda.statistic_print(col1, col2)
+# eda.plot_scatter(col1, col2)
+# eda.plot_barplot(col1, col2)
+
+# eda.eda_report('SquareFootageHouse')
+

@@ -64,6 +64,7 @@ class Transform:
         self.transform_hasfiberglass()
         self.transform_isfurnished()
         self.transform_datesinceforsale()
+        self.transform_hasfireplace()
         self.transform_kitchensquality()
         self.transform_bathroomsquality()
         self.transform_bedroomsquality()
@@ -96,6 +97,9 @@ class Transform:
             return (mdate.year - x.year) * 12 + (mdate.month - x.month)
         self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months)
 
+    def transform_hasfireplace(self):
+        self.data['HasFireplace'] = self.data['HasFireplace'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
+    
     def transform_kitchensquality(self):
         self.quality_to_quantity('KitchensQuality')
 
