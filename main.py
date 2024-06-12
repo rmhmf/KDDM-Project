@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
+import preproc
 
 
 class Data:
@@ -14,6 +14,9 @@ class Data:
         df = pd.read_csv(self.dir)
         return df
 
+    def save_data(self, text):
+        self.data.to_csv(text, index=False)
+
     def get_data(self):
         return self.data
 
@@ -21,66 +24,6 @@ class Data:
         print(self.data.info())
         print(self.data.describe())
         print(self.data.head())
-
-
-class PreProc:
-    def __init__(self, data):
-        self.data = data
-        self.data_cleaning()
-        self.data_transforming()
-
-    def data_cleaning(self):
-        self.remove_empty_rows()
-        self.clean_location()
-
-    def data_transforming(self):
-        self.transform_hasphotovoltaics()
-        self.transform_heatingtype()
-        self.transform_hasfiberglass()
-        self.transform_isfurnished()
-        self.transform_datesinceforsale()
-        self.transform_windowmodelnames()
-
-    def remove_empty_rows(self):
-        print(f"{self.data.isnull().all(axis=1).sum()} number of rows has been deleted.")
-        self.data.dropna(how='all', inplace=True)
-
-    def clean_location(self):
-        location_misspell = {
-            'Suburbann': 'Suburban'
-        }
-        self.data['Location'] = self.data['Location'].replace(location_misspell)
-
-    def transform_hasphotovoltaics(self):
-        self.data['HasPhotovoltaics'] = self.data['HasPhotovoltaics'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
-
-    def transform_heatingtype(self):
-        unified_name = {
-            'Oil Heating': 'Oil',
-            'Electric': 'Electricity',
-        }
-        self.data['HeatingType'] = self.data['HeatingType'].replace(unified_name)
-
-    def transform_hasfiberglass(self):
-        self.data['HasFiberglass'] = self.data['HasFiberglass'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
-
-    def transform_isfurnished(self):
-        self.data['IsFurnished'] = self.data['IsFurnished'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
-
-    def transform_datesinceforsale(self):
-        self.data['DateSinceForSale'] = pd.to_datetime(self.data['DateSinceForSale'], format="%Y-%m-%d")
-        mdate = self.data['DateSinceForSale'].max()
-
-        def to_months(x):
-            return (mdate.year - x.year) * 12 + (mdate.month - x.month)
-        self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months)
-
-    def transform_windowmodelnames(self):
-        self.data.loc[self.data['WindowModelNames'].str.contains('Wood'), 'WindowModelNames'] = 'Wood'
-        self.data.loc[self.data['WindowModelNames'].str.contains('Steel'), 'WindowModelNames'] = 'Steel'
-        self.data.loc[self.data['WindowModelNames'].str.contains('Aluminum'), 'WindowModelNames'] = 'Aluminum'
-
-
 
 
 class EDA:
@@ -134,10 +77,11 @@ data = Data()
 data.data_desc()
 df = data.get_data()
 
-preproc = PreProc(df)
+preproc = preproc.PreProc(df)
+data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
-col = 'Price'
+col = 'PoolQuality'
 eda.statistic_print(col)
 eda.visual_missing_value(col)
 eda.plot_boxplot(col)
