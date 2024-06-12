@@ -99,7 +99,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,1,53.0,Suburban,58.0,1,,Oil,0,1,11,Green,,0,2,2,1,3,14.0,2.3,,Wood,110.70012
 1,1,41.0,Urban,70.0,,1,Electricity,0,1,7,White,Roman,0,3,1,2,2,6.0,3.15,,Steel,173.23775
 2,1,71.0,Urban,13.0,,1,Electricity,1,0,3,Gray,,0,1,2,2,2,6.0,2.85,,Wood,146.63691
-3,1,116.0,Urban,-2.0,,1,Oil,1,1,2,Gray,Laura,0,2,1,1,3,6.0,2.59,184.0,Aluminum,229.05636
+3,1,116.0,Urban,,,1,Oil,1,1,2,Gray,Laura,0,2,1,1,3,6.0,2.59,184.0,Aluminum,229.05636
 2,2,90.0,Rural,20.0,,0,Oil,1,1,8,Green,Natalie,0,2,1,2,3,6.0,2.72,145.6,Steel,432.61927
 1,1,93.0,Suburban,24.0,3,,Oil,0,1,32,White,,0,3,2,1,2,46.0,1.75,,Aluminum,3281.9426
 1,2,98.0,Rural,,,0,Gas,0,0,48,Green,Martin,0,1,3,3,2,6.0,3.39,,Wood,221.86337
@@ -117,7 +117,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,,55.0,Suburban,67.0,,,Electricity,1,1,0,Green,,0,2,2,2,3,6.0,1.83,,Wood,91.65324
 1,1,22.0,Rural,57.0,,,Electricity,0,1,24,Yellow,Theresa,0,3,1,3,1,6.0,3.19,13.2,Wood,141.84538
 2,,120.0,Suburban,,,1,Gas,0,1,36,White,,0,2,3,2,3,6.0,1.49,,Aluminum,2138.0926
-1,,33.0,Rural,-16.0,,1,Electricity,0,1,1,Yellow,Maria,0,1,3,2,3,6.0,2.92,,Wood,173.001
+1,,33.0,Rural,,,1,Electricity,0,1,1,Yellow,Maria,0,1,3,2,3,6.0,2.92,,Wood,173.001
 ,,40.0,Suburban,57.0,,,Gas,1,0,11,Gray,,0,2,2,1,2,6.0,1.35,,Aluminum,41.37351
 1,4,145.0,Rural,3.0,,0,Gas,0,1,3,Yellow,Maria,0,3,2,2,2,6.0,2.56,145.0,Steel,486.07042
 1,1,49.0,Suburban,,,0,Electricity,0,1,40,White,Theresa,0,2,2,3,2,6.0,1.31,29.4,Aluminum,42.95066
@@ -253,7 +253,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,1,33.0,Rural,70.0,,,Gas,0,1,10,Green,Johanna,0,2,2,2,2,6.0,1.6,,Steel,241.17348
 2,2,138.0,Suburban,52.0,,0,Electricity,1,0,43,Gray,,0,1,1,2,1,6.0,2.47,82.2,Steel,126.06172
 3,1,119.0,Urban,70.0,,0,Oil,0,1,36,White,Denis,0,2,1,2,1,6.0,1.64,,Wood,244.05737
-,1,53.0,Suburban,-38.0,,,Gas,0,1,21,Green,,0,2,2,3,2,6.0,2.28,53.0,Wood,87.0439
+,1,53.0,Suburban,,,,Gas,0,1,21,Green,,0,2,2,3,2,6.0,2.28,53.0,Wood,87.0439
 1,1,100.0,Urban,48.0,,0,Gas,0,1,4,Green,,0,2,2,2,3,6.0,3.36,,Steel,266.35565
 1,,99.0,Urban,53.0,,0,Gas,0,0,24,White,Johanna,0,3,2,1,2,16.0,1.47,,Steel,229.69162
 1,1,59.0,Suburban,23.0,2,,Oil,0,0,45,Green,Lukas,0,1,2,3,2,16.0,2.86,,Aluminum,74.68073
@@ -272,7 +272,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 3,1,122.0,Suburban,51.0,,,Gas,0,1,13,Green,Sabrina,0,1,3,3,2,6.0,2.01,,Steel,177.40216
 3,1,108.0,Suburban,65.0,,0,Electricity,1,0,0,White,Denis,0,2,2,3,1,6.0,3.0,,Aluminum,77.5376
 1,1,57.0,Urban,35.0,,0,Gas,0,1,6,White,Daniel,0,2,2,3,2,6.0,3.25,58.0,Aluminum,111.69816
-2,1,70.0,Rural,-1.0,,0,Electricity,0,1,9,White,Roman,0,2,2,1,3,6.0,3.23,,Wood,237.67733
+2,1,70.0,Rural,,,0,Electricity,0,1,9,White,Roman,0,2,2,1,3,6.0,3.23,,Wood,237.67733
 2,2,89.0,,62.0,,1,Oil,1,1,41,White,Lukas,0,3,3,2,2,6.0,1.72,,Steel,399.92552
 1,1,93.0,Urban,44.0,,,Oil,1,1,42,Gray,,0,2,2,1,2,46.0,2.96,147.2,Aluminum,267.92421
 2,2,143.0,Urban,,,,Oil,1,1,41,Green,,0,3,2,1,1,6.0,2.31,232.0,Steel,344.03748
@@ -379,7 +379,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,1,39.0,Rural,29.0,,,Electricity,1,0,13,Gray,,0,2,1,2,3,6.0,1.23,23.4,Aluminum,101.21863
 1,1,47.0,Rural,,,1,Oil,0,1,8,Gray,Johanna,0,3,2,3,2,6.0,2.6,,Wood,226.44758
 3,3,135.0,Rural,50.0,,0,Electricity,0,0,25,Yellow,Andreas,0,2,1,3,1,6.0,4.82,81.6,Aluminum,196.23115
-1,1,56.0,Urban,-37.0,,,Electricity,0,1,40,Green,Martin,0,3,3,2,2,6.0,1.57,,Wood,141.19427
+1,1,56.0,Urban,,,,Electricity,0,1,40,Green,Martin,0,3,3,2,2,6.0,1.57,,Wood,141.19427
 ,2,111.0,Urban,67.0,,0,Oil,0,1,39,Yellow,Sandra,0,2,2,2,2,6.0,3.12,,Steel,287.80215
 5,1,147.0,Urban,45.0,,,Gas,0,1,6,Gray,Maria,0,2,2,3,3,6.0,1.57,,Wood,291.25267
 1,,99.0,Rural,,,0,Oil,0,1,10,Yellow,,0,1,2,2,2,14.0,2.01,,Aluminum,276.61132
@@ -412,7 +412,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 5,4,145.0,Urban,59.0,2,0,Oil,0,1,28,,Sabrina,0,1,1,2,1,16.0,1.44,235.2,Aluminum,288.94839
 1,,43.0,Rural,27.0,3,0,Gas,1,1,19,Yellow,Stefan,0,2,3,3,2,46.0,2.7,,Wood,371.75419
 1,1,39.0,Urban,20.0,,,Gas,0,0,34,Gray,Maria,0,2,2,2,2,6.0,3.09,,Wood,110.07285
-1,,48.0,Urban,-60.0,,0,Electricity,0,1,31,White,,0,3,1,1,1,16.0,2.59,28.8,Steel,182.6915
+1,,48.0,Urban,,,0,Electricity,0,1,31,White,,0,3,1,1,1,16.0,2.59,28.8,Steel,182.6915
 4,,150.0,Urban,21.0,2,0,Electricity,1,1,0,Gray,,0,2,3,1,2,16.0,2.37,,Steel,355.05239
 1,1,90.0,Rural,50.0,,,Oil,0,1,1,Green,,0,3,2,2,2,6.0,2.19,142.4,Wood,323.8708
 3,5,140.0,Urban,69.0,2,0,Oil,0,0,24,White,Laura,0,1,2,3,2,16.0,1.66,,Wood,284.56
@@ -478,7 +478,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,3,128.0,Rural,53.0,,1,Oil,0,1,28,Yellow,Martin,0,2,2,1,1,6.0,2.86,,Aluminum,305.45048
 1,3,122.0,Urban,66.0,,0,Electricity,0,0,29,Green,,0,3,3,1,1,46.0,1.7,73.2,Aluminum,206.82483
 ,1,37.0,Suburban,39.0,2,1,Electricity,0,1,22,Yellow,,0,2,2,2,2,16.0,2.05,22.8,Aluminum,59.86132
-1,,116.0,Urban,-2.0,,0,Oil,0,1,43,Yellow,,0,2,2,2,2,6.0,2.91,,Aluminum,215.8349
+1,,116.0,Urban,,,0,Oil,0,1,43,Yellow,,0,2,2,2,2,6.0,2.91,,Aluminum,215.8349
 2,2,119.0,Rural,,,0,Gas,1,0,33,,Denis,0,2,1,3,2,6.0,2.0,,Steel,321.70492
 2,1,111.0,Urban,33.0,2,,Gas,0,1,20,Yellow,,0,3,2,2,3,16.0,3.15,,Steel,314.19133
 2,,144.0,Rural,39.0,,,Gas,1,1,30,,Roman,0,3,2,2,3,6.0,3.04,145.0,Aluminum,321.92244
@@ -523,7 +523,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 2,1,65.0,Rural,24.0,,,Oil,0,0,20,Green,Laura,0,3,2,3,1,6.0,2.74,,Wood,235.64261
 2,2,66.0,Rural,53.0,3,0,Gas,0,1,19,Yellow,Roman,0,2,2,2,3,46.0,4.52,,Aluminum,314.98402
 1,1,98.0,Rural,61.0,,0,Oil,0,1,24,Gray,,0,2,1,2,1,6.0,2.32,,Aluminum,225.40154
-1,1,49.0,Rural,-82.0,,0,Electricity,1,1,37,Gray,Sabrina,0,1,1,1,2,6.0,1.83,,Aluminum,89.20655
+1,1,49.0,Rural,,,0,Electricity,1,1,37,Gray,Sabrina,0,1,1,1,2,6.0,1.83,,Aluminum,89.20655
 1,1,31.0,Rural,58.0,2,0,Oil,0,1,44,White,Denis,0,2,2,1,3,16.0,2.51,46.4,Aluminum,135.97201
 4,4,129.0,Rural,37.0,1,1,Gas,0,1,33,,Sandra,0,3,2,3,3,14.0,2.3,130.0,Aluminum,342.50873
 1,1,38.0,Urban,31.0,,0,Oil,1,1,3,Green,Maria,0,1,2,2,3,6.0,2.0,62.4,Wood,163.99051
@@ -551,7 +551,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,1,48.0,Rural,19.0,,0,Oil,0,1,4,,,0,2,1,2,2,16.0,1.59,72.0,Aluminum,191.10104
 2,3,102.0,Suburban,60.0,,0,Oil,0,0,9,Gray,Daniel,0,2,2,1,3,6.0,1.59,,Aluminum,99.84691
 1,2,72.0,Urban,59.0,,0,Electricity,0,1,5,White,Daniel,0,2,1,1,2,46.0,1.47,,Steel,305.63025
-1,1,40.0,Urban,-40.0,,0,Oil,0,0,46,Yellow,Johanna,0,2,1,1,3,6.0,4.03,,Aluminum,70.63917
+1,1,40.0,Urban,,,0,Oil,0,0,46,Yellow,Johanna,0,2,1,1,3,6.0,4.03,,Aluminum,70.63917
 2,,100.0,Urban,17.0,,1,Electricity,0,1,11,Gray,,0,2,3,2,2,6.0,2.84,,Aluminum,151.72641
 1,1,51.0,Rural,26.0,3,0,Electricity,0,0,12,Green,Denis,0,3,1,2,2,46.0,1.91,30.0,Steel,346.10895
 1,,33.0,Suburban,61.0,2,1,Gas,1,1,44,Yellow,Sabrina,0,1,3,3,2,16.0,2.12,34.0,Steel,124.48368
@@ -599,7 +599,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 2,,67.0,Suburban,47.0,,0,Oil,0,1,10,Gray,,0,2,3,3,2,6.0,1.48,,Aluminum,92.65441
 2,2,150.0,Urban,33.0,3,0,Electricity,1,1,16,Gray,Daniel,0,3,1,1,2,46.0,1.38,,Steel,399.97087
 1,4,129.0,Rural,,,,Electricity,1,0,1,Green,Andreas,0,3,3,1,2,16.0,3.43,,Aluminum,246.34799
-2,1,78.0,Rural,-14.0,,0,Oil,0,1,41,Green,Martin,0,3,2,2,3,6.0,2.33,,Steel,370.04043
+2,1,78.0,Rural,,,0,Oil,0,1,41,Green,Martin,0,3,2,2,3,6.0,2.33,,Steel,370.04043
 ,1,121.0,Urban,29.0,,,Gas,0,1,42,Yellow,,0,3,1,3,2,6.0,3.6,120.0,Steel,281.2139
 1,,50.0,Suburban,45.0,,1,Oil,0,1,19,Green,Lukas,0,2,2,3,3,16.0,1.98,,Wood,119.40084
 1,2,65.0,Suburban,70.0,,0,Oil,1,1,31,White,Maria,0,2,2,2,1,6.0,3.46,104.0,Wood,109.19771
@@ -769,7 +769,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,1,53.0,Rural,42.0,2,,Oil,0,0,30,Green,Martin,0,1,3,2,3,16.0,2.14,83.2,Aluminum,168.17889
 1,1,40.0,Urban,,,0,Gas,1,0,14,Green,Natalie,0,2,3,2,3,16.0,2.79,40.0,Steel,192.4916
 1,,100.0,Urban,37.0,,,Electricity,0,1,24,Gray,Natalie,0,1,3,3,2,6.0,2.09,60.0,Wood,192.41724
-1,1,28.0,Rural,-1.0,,,Gas,1,0,38,White,Theresa,0,3,3,1,3,6.0,1.38,28.0,Aluminum,113.97192
+1,1,28.0,Rural,,,,Gas,1,0,38,White,Theresa,0,3,3,1,3,6.0,1.38,28.0,Aluminum,113.97192
 1,2,130.0,Urban,47.0,,,Electricity,1,1,47,White,Laura,0,3,1,2,2,6.0,1.96,,Steel,257.83839
 1,1,35.0,Rural,43.0,,0,Gas,1,0,25,Gray,Theresa,0,2,2,2,3,6.0,2.53,34.0,Wood,163.57213
 1,1,54.0,Suburban,39.0,,0,Oil,0,0,26,,Andreas,0,3,2,3,2,6.0,3.13,,Steel,114.48894
@@ -819,7 +819,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 3,1,135.0,Suburban,41.0,2,0,Oil,0,1,30,Yellow,Johanna,0,2,3,3,1,16.0,3.84,,Wood,196.758
 1,1,38.0,Urban,,,0,Electricity,0,1,28,Gray,,0,2,2,2,2,6.0,1.19,22.8,Aluminum,59.19676
 1,1,81.0,Rural,34.0,,1,Oil,0,0,32,Yellow,Florian,0,2,2,3,3,6.0,2.22,,Aluminum,192.28561
-,3,124.0,Suburban,-20.0,,0,Electricity,0,1,19,White,Laura,0,1,1,3,3,6.0,1.5,,Steel,147.74131
+,3,124.0,Suburban,,,0,Electricity,0,1,19,White,Laura,0,1,1,3,3,6.0,1.5,,Steel,147.74131
 3,2,116.0,Rural,,1,,Oil,0,1,43,Yellow,Sandra,0,3,2,2,1,14.0,3.96,184.0,Aluminum,308.39612
 2,,83.0,Suburban,61.0,,0,Electricity,0,0,12,Green,Sabrina,0,3,2,2,1,6.0,2.56,,Wood,85.23238
 1,,47.0,Urban,57.0,,,Gas,0,0,14,White,,0,3,2,3,1,46.0,1.39,47.0,Steel,251.10501
@@ -974,7 +974,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,,92.0,Urban,24.0,,0,Electricity,1,1,46,Gray,Denis,0,1,2,2,2,14.0,1.79,,Steel,245.73527
 1,1,57.0,Rural,56.0,1,,Gas,1,1,21,Green,Florian,0,1,2,3,3,14.0,1.83,,Steel,329.62138
 ,,88.0,Urban,62.0,2,0,Oil,0,1,2,Gray,,1,2,2,2,2,16.0,1.62,139.2,Steel,306.16859
-2,1,128.0,,-46.0,,0,Electricity,1,1,34,White,Florian,0,2,1,3,1,6.0,1.59,,Aluminum,93.57659
+2,1,128.0,,,,0,Electricity,1,1,34,White,Florian,0,2,1,3,1,6.0,1.59,,Aluminum,93.57659
 1,1,122.0,Suburban,28.0,,0,Electricity,1,1,41,White,Roman,0,2,2,2,3,6.0,2.97,72.6,Wood,125.37942
 ,1,33.0,Suburban,,,0,Oil,1,0,3,White,Sabrina,0,2,1,2,3,6.0,2.83,49.6,Steel,95.85632
 1,1,92.0,Suburban,63.0,,1,Electricity,1,1,48,White,,0,2,2,3,2,6.0,3.64,,Aluminum,73.10897
@@ -985,7 +985,7 @@ Bedrooms,Bathrooms,SquareFootageHouse,Location,Age,PoolQuality,HasPhotovoltaics,
 1,,52.0,Urban,37.0,,,Electricity,1,1,32,White,Denis,0,2,2,2,3,6.0,3.74,31.8,Steel,200.61956
 1,1,32.0,Suburban,49.0,2,0,Oil,1,0,45,White,Maria,0,2,2,2,2,16.0,3.17,,Steel,108.23528
 1,1,96.0,Rural,49.0,,1,Oil,0,1,28,Green,,0,3,1,3,2,6.0,1.83,,Aluminum,249.579
-2,,65.0,Rural,-2.0,,0,Gas,1,1,49,White,Andreas,0,2,1,3,2,6.0,2.39,,Wood,248.89233
+2,,65.0,Rural,,,0,Gas,1,1,49,White,Andreas,0,2,1,3,2,6.0,2.39,,Wood,248.89233
 1,,78.0,Suburban,40.0,,0,Oil,0,1,21,Green,,0,2,2,2,2,14.0,2.77,124.8,Wood,134.07878
 1,2,66.0,Rural,67.0,,0,Electricity,1,1,46,Yellow,Andreas,0,2,3,1,2,6.0,4.4,39.6,Steel,275.54542
 1,,43.0,Urban,54.0,2,,Oil,0,1,34,Green,Laura,0,2,3,3,2,16.0,2.35,65.6,Wood,179.71198

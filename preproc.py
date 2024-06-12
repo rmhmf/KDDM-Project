@@ -48,11 +48,27 @@ class Outlier:
     def __init__(self, data):
         self.data = data
         self.squarefootagehouse()
+        self.age()
+        self.heatingcosts()
+        self.price()
     
     def squarefootagehouse(self):
         threshold = 200
         self.data.loc[self.data['SquareFootageHouse'] > threshold, 'SquareFootageHouse'] = np.nan
         self.data.loc[self.data['SquareFootageHouse'] < 0, 'SquareFootageHouse'] = np.nan
+
+    def heatingcosts(self):
+            threshold = 300
+            self.data.loc[self.data['HeatingCosts'] > threshold, 'HeatingCosts'] = np.nan
+            self.data.loc[self.data['HeatingCosts'] < 0, 'HeatingCosts'] = np.nan
+
+    def age(self):
+        self.data.loc[self.data['Age'] < 0, 'Age'] = np.nan
+
+    def price(self):
+        threshold = 1000
+        self.data.loc[self.data['Price'] > threshold, 'Price'] = np.nan
+
 
 class MissingV:
     def __init__(self, data):
@@ -75,6 +91,7 @@ class Transform:
         self.bathroomsquality()
         self.bedroomsquality()
         self.livingroomsquality()
+        self.squarefootagegarden()
 
     def bedrooms(self):
         self.data['Bedrooms'] = self.data['Bedrooms'].astype(pd.Int32Dtype())
@@ -125,3 +142,6 @@ class Transform:
             'Excellent': 3,
         }
         self.data[col] = self.data[col].map(map_dic).astype(pd.Int32Dtype())
+
+    def squarefootagegarden(self):
+        self.data['SquareFootageGarden'] = self.data['SquareFootageGarden'].astype(pd.Int32Dtype())

@@ -79,7 +79,7 @@ class EDA:
             print(self.data[col].value_counts())
             sns.countplot(data=self.data, x=col)
         plt.title(f"Bar chart of column {col}", fontsize=18)
-        plt.xticks(fontsize=24)
+        plt.xticks(fontsize=12)
         plt.ylabel('Values')
         plt.tight_layout(pad=2.0)
         plt.show()
@@ -109,22 +109,31 @@ class EDA:
         plt.ylabel(col2)
         plt.show()
 
+    def plot_cat_cat(self, col1, col2):
+        plt.figure(figsize=(12, 10))
+        sns.countplot(x=col1, hue=col2, data=self.data)
+        plt.xlabel(col1)
+        plt.ylabel(col2)
+        plt.title('Count Plot')
+        plt.show()
+
 data = Data()
 data.data_desc()
 df = data.get_data()
 
 preproc = preproc.PreProc(df)
-data.save_data("preprocV0.1.csv")
+# data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
 # eda.visual_missing_value()
 eda.plot_corr()
 
 col1 = 'Location'
-col2 = 'Age'
-eda.statistic_print(col1, col2)
+col2 = 'Price'
+# eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
 # eda.plot_barplot(col1, col2)
+# eda.plot_cat_cat(col1, col2)
 
-eda.eda_report('Age')
+# eda.eda_report('Price')
 

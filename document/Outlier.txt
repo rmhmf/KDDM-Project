@@ -8,3 +8,7 @@ Also there are some negative values which is meaningless in this context
 * Age
 age containes negative values which does not make DateSinceForSale
 -Again set them to missing value
+
+* HasFireplace
+There are only three 1 value and the rest is 0
+should be removed
