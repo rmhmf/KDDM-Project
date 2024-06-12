@@ -1,0 +1,10 @@
+* SquareFootageHouse
+
+values bigger than 151 are definitely outliers.
+Not correspond with the size and the price of the house.
+Also there are some negative values which is meaningless in this context
+- set them to missing values.
+
+* Age
+age containes negative values which does not make DateSinceForSale
+-Again set them to missing value

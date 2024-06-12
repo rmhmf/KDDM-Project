@@ -36,9 +36,6 @@ class EDA:
         self.plot_boxplot(col)
         self.plot_count_bar(col)
 
-    def statistic_print(self, col):
-        print(self.data[col].describe())
-
     def plot_corr(self):
         numerical_data = self.data.select_dtypes(include=['float64', 'Int32', 'Float64'])
         correlation_matrix = numerical_data.corr().round(3)
@@ -87,12 +84,15 @@ class EDA:
         plt.tight_layout(pad=2.0)
         plt.show()
 
-    def statistic_print(self, col1, col2):
-        print(self.data.groupby(col1)[col2].agg(['mean', 'std']))
+    def statistic_print(self, col1, col2=None):
+        if col2:
+            print(self.data.groupby(col1)[col2].agg(['mean', 'std']))
+        else:
+            print(self.data[col1].describe())
 
     def plot_barplot(self, col1, col2):
         plt.figure(figsize=(12, 10))
-        sns.barplot(x=col1, y=col2, data=self.data, color='skyblue')
+        sns.barplot(x=col1, y=self.data[col2].astype(float), data=self.data, color='skyblue')
         plt.xlabel(col1)
         plt.ylabel(col2)
         plt.title('Bar Plot')
@@ -117,13 +117,14 @@ preproc = preproc.PreProc(df)
 data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
-eda.visual_missing_value()
+# eda.visual_missing_value()
 eda.plot_corr()
-# col1 = 'Bedrooms'
-# col2 = 'Location'
-# eda.statistic_print(col1, col2)
+
+col1 = 'Location'
+col2 = 'Age'
+eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
 # eda.plot_barplot(col1, col2)
 
-# eda.eda_report('SquareFootageHouse')
+eda.eda_report('Age')
 
