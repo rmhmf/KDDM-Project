@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import preproc
+import statsmodels.api as sm
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
 class Data:
@@ -38,9 +40,11 @@ class EDA:
 
     def plot_corr(self):
         numerical_data = self.data.select_dtypes(include=['float64', 'Int32', 'Float64'])
-        correlation_matrix = numerical_data.corr().round(3)
+        method = 'pearson' # pearson spearman, kendall
+        correlation_matrix = numerical_data.corr(method=method).round(1)
         plt.figure(figsize=(12, 10))
-        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5, linecolor='black', vmin=-1, vmax=1)
+        plt.xticks(fontsize=6)
         plt.tight_layout(pad=2.0)
         plt.title('Correlation Matrix')
         plt.show()
@@ -72,7 +76,7 @@ class EDA:
     def plot_count_bar(self, col):
         plt.figure(figsize=(12, 10))
         if self.data[col].dtype == float:
-            bins = pd.cut(self.data[col], bins=10)
+            bins = pd.cut(self.data[col], bins=20)
             print(bins.value_counts())
             sns.countplot(x=bins)
         else:
@@ -102,9 +106,9 @@ class EDA:
         size_df = self.data.groupby([col1, col2]).size().reset_index(name='counts')
         sns.scatterplot(x=col1, y=col2, data=size_df, size='counts',
                         sizes=(size_df['counts'].min(), size_df['counts'].max()))
-        sns.regplot(x=col1, y=col2, data=self.data, scatter=False, color='red')
+        # sns.regplot(x=col1, y=col2, data=self.data, scatter=False, color='red')
         plt.title('Scatter plot')
-        plt.legend(loc='upper right')
+        plt.legend(loc='lower right')
         plt.xlabel(col1)
         plt.ylabel(col2)
         plt.show()
@@ -116,24 +120,38 @@ class EDA:
         plt.ylabel(col2)
         plt.title('Count Plot')
         plt.show()
+    
+    def plot_qqplot(self, col):
+        sm.qqplot(self.data[col], line='q')
+        plt.title(f'QQ Plot {col}')
+        plt.show()
+
+    def plot_violin(self, col1, col2):
+        print(self.data[col1].dtype)
+        print(self.data[col2].dtype)
+        # sns.violinplot(x=col1, y=col2, data=self.data)
+        plt.title('Violin Plot of by Category')
+        plt.xlabel(col1)
+        plt.ylabel(col2)
+        plt.show()
 
 data = Data()
-data.data_desc()
+# data.data_desc()
 df = data.get_data()
 
 preproc = preproc.PreProc(df)
 # data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
-# eda.visual_missing_value()
+eda.visual_missing_value()
 eda.plot_corr()
 
-col1 = 'Location'
+col1 = 'Age'
 col2 = 'Price'
 # eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
-# eda.plot_barplot(col1, col2)
+# eda.plot_violin(col1, col2)
 # eda.plot_cat_cat(col1, col2)
 
-# eda.eda_report('Price')
-
+# eda.plot_qqplot('SquareFootageHouse')
+# eda.eda_report('Age')
