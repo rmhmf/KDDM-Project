@@ -1,0 +1,23 @@
+* Bathrooms
+using correlation with SquareFootageHouse and bays theorem
+
+* Bedrooms
+using correlation with SquareFootageHouse and bays theorem
+
+* Age
+Fill with KNN or assign 80 to all missed values
+
+* PoolQuality
+MAR: the value of poolquality can be computed with the value of SquareFootageGarden
+
+* HasPhotovoltaics
+remove it because about 75 percent is missed
+
+* HouseColor
+fill with KNN
+
+* PreviousOwnerName
+remove it becuase seems unrelated to the target
+
+* HeatingCosts
+fitting a linear model to impute this value

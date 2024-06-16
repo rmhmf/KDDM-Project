@@ -5,6 +5,7 @@ import seaborn as sns
 import preproc
 import statsmodels.api as sm
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import missingno as msno
 
 
 class Data:
@@ -76,12 +77,18 @@ class EDA:
     def plot_count_bar(self, col):
         plt.figure(figsize=(12, 10))
         if self.data[col].dtype == float:
-            bins = pd.cut(self.data[col], bins=20)
+            bins = pd.cut(self.data[col], bins=10)
             print(bins.value_counts())
             sns.countplot(x=bins)
         else:
-            print(self.data[col].value_counts())
-            sns.countplot(data=self.data, x=col)
+            # print(self.data[col].value_counts())
+            # sns.countplot(data=self.data[col].value_counts)
+            value_counts = self.data[col].value_counts().reset_index()
+            value_counts.columns = [col, 'count']
+            
+            # Use sns.barplot to plot the counts
+            sns.barplot(x=col, y='count', data=value_counts)
+
         plt.title(f"Bar chart of column {col}", fontsize=18)
         plt.xticks(fontsize=12)
         plt.ylabel('Values')
@@ -140,18 +147,34 @@ data = Data()
 df = data.get_data()
 
 preproc = preproc.PreProc(df)
-# data.save_data("preprocV0.1.csv")
+data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
 eda.visual_missing_value()
-eda.plot_corr()
+# eda.plot_corr()
 
-col1 = 'Age'
+col1 = 'HasPhotovoltaics'
 col2 = 'Price'
 # eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
+# eda.plot_barplot(col1, col2)
 # eda.plot_violin(col1, col2)
 # eda.plot_cat_cat(col1, col2)
 
 # eda.plot_qqplot('SquareFootageHouse')
 # eda.eda_report('Age')
+
+# df = df.astype(float)
+# msno.matrix(df)
+# plt.show()
+# msno.heatmap(df)
+# plt.show()
+
+# target_column = "Age"
+# plot_data = df[[target_column] + [col for col in df.columns if col != target_column]]
+
+# Create pair plots using seaborn
+# sns.pairplot(plot_data, kind='scatter')
+# sns.pairplot(df, hue='Age', diag_kind='scatter')
+# plt.tight_layout(pad=8.0)
+# plt.show()

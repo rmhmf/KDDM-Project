@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from sklearn.preprocessing import PowerTransformer
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+import statsmodels.api as sm
+from sklearn.impute import KNNImputer
 
 
 class PreProc:
@@ -13,6 +19,10 @@ class PreProc:
         missing_v = MissingV(self.data)
         transform = Transform(self.data)
 
+        missing_v.heatingcosts()
+        transform.heatingcosts()
+
+        missing_v.impute_remained()
 
 class Clean:
     def __init__(self, data):
@@ -77,6 +87,9 @@ class MissingV:
         self.data = data
         self.bedrooms()
         self.bathrooms()
+        self.poolquality()
+        self.hasphotovoltaics()
+        self.previousownername()
 
     def bedrooms(self):
         # Using the correlation between Bedrooms and SquareFootageHouse
@@ -113,6 +126,80 @@ class MissingV:
                 return row['Bathrooms']
         
         self.data['Bathrooms'] = self.data.apply(predic_label, axis=1)
+
+    def poolquality(self):
+        def fill_mar(row):
+            if row['SquareFootageGarden'] == 6:
+                return 'NoPool'
+            elif row['SquareFootageGarden'] == 14:
+                return 'Poor'
+            elif row['SquareFootageGarden'] == 16:
+                return 'Good'
+            else:
+                return 'Excellent'
+
+        self.data['PoolQuality'] = self.data.apply(fill_mar, axis=1)
+
+    def heatingcosts(self):
+        respons = ['SquareFootageHouse', 'HeatingType_Oil', 'Price']
+        lm = LinearM(self.data, 'OLS', "HeatingCosts", respons)
+        model, selected_features = lm.feature_selection()
+
+        # model2 = sm.OLS(y, phi).fit()
+
+        x_pred_d = self.data[respons].dropna()
+
+        pf = PolynomialFeatures(degree=2, interaction_only=True, include_bias=True)
+        x_pred = pf.fit_transform(x_pred_d)
+
+        pf_feature_names = pf.get_feature_names_out(input_features=respons)
+        x_pred = pd.DataFrame(x_pred, columns=list(pf_feature_names))[selected_features]
+
+        predictions = model.predict(x_pred).to_frame()
+
+        predictions.set_index(x_pred_d.index, inplace=True)
+
+        def impute(row):
+            if pd.isna(row['HeatingCosts']):
+                if row.name in predictions.index:
+                    return predictions.loc[row.name]
+            else:
+                return row['HeatingCosts']                
+            
+        self.data['HeatingCosts'] = self.data.apply(impute, axis=1)
+
+    def hasphotovoltaics(self):
+        self.data.drop('HasPhotovoltaics', axis=1, inplace=True)
+
+    def previousownername(self):
+        self.data.drop('PreviousOwnerName', axis=1, inplace=True)
+
+    def impute_remained(self):
+        col_rep = ['HouseColor_Gray', 'HouseColor_Green', 'HouseColor_White', 'HouseColor_Yellow']
+        self.knn_impute(col_rep, 1, int)
+
+        self.knn_impute(['Age'], 3, int)
+
+        col_rep = ['Bedrooms', 'Bathrooms', 'SquareFootageHouse', 'Location_Rural', 'Location_Suburban', 'Location_Urban']
+        self.knn_impute(col_rep, 1, int)
+
+        col_rep = ['HeatingCosts', 'Price']
+        self.knn_impute(col_rep, 3, float)
+
+    def knn_impute(self, col_rep, n, type):
+        imputer = KNNImputer(n_neighbors=n)
+        
+        scaler = StandardScaler()
+        normalized_data = scaler.fit_transform(self.data)
+
+        imputed_df_norm = imputer.fit_transform(normalized_data)
+        imputed_df = scaler.inverse_transform(imputed_df_norm).astype(type)
+        imputed_df = pd.DataFrame(imputed_df, columns=self.data.columns, index=self.data.index)
+
+        miss_ind = self.data[col_rep].isnull().any(axis=1)
+        self.data.loc[miss_ind, col_rep] = imputed_df.loc[miss_ind, col_rep]
+        
+
 class Transform:
     def __init__(self, data):
         self.data = data
@@ -122,7 +209,7 @@ class Transform:
         self.location()
         # self.age()
         self.poolquality()
-        self.hasphotovoltaics()
+        # self.hasphotovoltaics()
         self.heatingtype()
         self.hasfiberglass()
         self.isfurnished()
@@ -136,7 +223,7 @@ class Transform:
         self.livingroomsquality()
         self.squarefootagegarden()
         self.previousownerrating()
-        self.heatingcosts()
+        # self.heatingcosts()
         self.windowmodelnames()
         self.price()
 
@@ -148,19 +235,46 @@ class Transform:
 
     def location(self):
         self.to_one_hot('Location')
+        self.data.drop('Location', axis=1, inplace=True)
 
     def age(self):
-        max_age = self.data['Age'].max()
-        self.data['Age'] = self.data['Age'].apply(self.reflect_sqrt, max=max_age)
+
+        def binary(x):
+            if not pd.isna(x):
+                if x>40:
+                    return 1
+                else: return 0
+            else:
+                return 1
+
+        ind = self.data.columns.get_loc('Age')
+        new_col = self.data['Age'].apply(binary).astype(pd.Int32Dtype())
+
+        self.data.insert(ind+1,'Age_binary', new_col)
+
+        # def bins(x):
+        #     if not pd.isna(x):
+        #         return x // 10
+        #     else:
+        #         return np.nan
+        
+        # self.data['Age'] = self.data['Age'].apply(bins).astype(pd.Int32Dtype())
+
+        # self.add_bool_col('Age')
+
+        # max_age = self.data['Age'].max()
+        # self.data['Age'] = self.data['Age'].apply(self.reflect_sqrt, max=max_age)
 
     def poolquality(self):
         self.quality_to_quantity('PoolQuality')
-
+        
     def hasphotovoltaics(self):
         self.data['HasPhotovoltaics'] = self.data['HasPhotovoltaics'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
+        # self.add_bool_col('HasPhotovoltaics')
 
     def heatingtype(self):
         self.to_one_hot('HeatingType')
+        self.data.drop('HeatingType', axis=1, inplace=True)
 
     def hasfiberglass(self):
         self.data['HasFiberglass'] = self.data['HasFiberglass'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
@@ -174,13 +288,16 @@ class Transform:
 
         def to_months(x):
             return (mdate.year - x.year) * 12 + (mdate.month - x.month)
-        self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months)
+            # return mdate.year - x.year
+        self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months).astype(pd.Int32Dtype())
 
     def housecolor(self):
         self.to_one_hot('HouseColor')
+        self.data.drop('HouseColor', axis=1, inplace=True)
 
     def previousownername(self):
-        self.to_one_hot('PreviousOwnerName')
+        # self.to_one_hot('PreviousOwnerName')
+        self.data.drop('PreviousOwnerName', axis=1, inplace=True)
 
     def hasfireplace(self):
         self.data['HasFireplace'] = self.data['HasFireplace'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
@@ -208,6 +325,7 @@ class Transform:
 
     def windowmodelnames(self):
         self.to_one_hot('WindowModelNames')
+        self.data.drop('WindowModelNames', axis=1, inplace=True)
 
     def price(self):
         self.data['Price'] = self.data['Price'].apply(np.log)
@@ -216,6 +334,7 @@ class Transform:
 
     def quality_to_quantity(self, col):
         map_dic = {
+            'NoPool': 0,
             'Poor': 1,
             'Good': 2,
             'Excellent': 3,
@@ -236,4 +355,87 @@ class Transform:
 
     def reflect_sqrt(self, x, max):
         return np.sqrt(max + 1 - x)
+
+    def add_bool_col(self, col):
+        ind = self.data.columns.get_loc(col)
+        def bool_f(x):
+            if pd.isna(x):
+                return 0
+            else:
+                return 1
+        
+        new_col = self.data[col].apply(bool_f).astype(pd.Int32Dtype())
+        self.data.insert(ind+1, col+'_ismissed', new_col)
+
+        
+class LinearM:
+
+    def __init__(self, data, method, target, respons=None):
+        self.data = data
+        self.method = method
+        if not respons:
+            numerical_cols = self.data.select_dtypes(include=['float64', 'Int32', 'Float64', 'Int64']).columns
+            cols_list = list(numerical_cols)
+            cols_list.remove(target)
+            self.respons = cols_list
+        else:
+            self.respons = respons
+        self.target = target
+    
+    def columns_without_nan(self, cols):
+        columns_without_nan = self.data.columns[self.data.notna().all()].tolist()
+        return columns_without_nan
+
+    def drop_nan(self):
+        valued_df = self.data[self.respons+[self.target]].dropna().astype(float)
+        valued_df.reset_index(inplace=True)
+        return valued_df
+
+    def feature_selection(self, signif_lev=.05):
+
+        df = self.drop_nan()
+
+        X = df[self.respons]
+        y = df[[self.target]]
+
+        pf = PolynomialFeatures(degree=2, interaction_only=True, include_bias=True)
+        X = pf.fit_transform(X)
+
+        pf_feature_names = pf.get_feature_names_out(input_features=self.respons)
+        X = pd.DataFrame(X, columns=list(pf_feature_names))
+        all_features = list(pf_feature_names)
+
+        sole_terms = self.respons.copy()
+        interaction_terms = [item for item in all_features if item not in sole_terms]
+
+        feasible_terms = interaction_terms.copy()
+        best_features = all_features.copy()
+
+        while len(best_features) > 1:
             
+            phi = X[best_features]
+            model = sm.OLS(y, phi).fit()
+            pvalues = model.pvalues
+
+            feas_ind = []
+            for ind, element in enumerate(best_features):
+                if element in feasible_terms:
+                    feas_ind.append(ind)
+            
+            max_pvalue = pvalues[feas_ind].max()
+
+            if max_pvalue > signif_lev:
+                excluded_feature = pvalues[feas_ind].idxmax()
+                
+                best_features.remove(excluded_feature)
+                feasible_terms.remove(excluded_feature)
+
+                parts = excluded_feature.split()
+                for part in parts:
+                    if part not in feasible_terms:
+                        feasible_terms.append(part)
+
+            else:
+                break
+        
+        return model, best_features
