@@ -6,6 +6,7 @@ import preproc
 import statsmodels.api as sm
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import missingno as msno
+from model import Feature_Sel, LModel, BaseLine
 
 
 class Data:
@@ -39,10 +40,13 @@ class EDA:
         self.plot_boxplot(col)
         self.plot_count_bar(col)
 
-    def plot_corr(self):
+    def plot_corr(self, data=None):
         numerical_data = self.data.select_dtypes(include=['float64', 'Int32', 'Float64'])
         method = 'pearson' # pearson spearman, kendall
-        correlation_matrix = numerical_data.corr(method=method).round(1)
+        if data is not None:
+            correlation_matrix = data.corr(method=method).round(1)
+        else:
+            correlation_matrix = numerical_data.corr(method=method).round(1)
         plt.figure(figsize=(12, 10))
         sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5, linecolor='black', vmin=-1, vmax=1)
         plt.xticks(fontsize=6)
@@ -150,8 +154,26 @@ preproc = preproc.PreProc(df)
 data.save_data("preprocV0.1.csv")
 
 eda = EDA(df)
-eda.visual_missing_value()
+# eda.visual_missing_value()
 # eda.plot_corr()
+
+X, y = preproc.get_transformed_X_y()
+
+fs_ob = Feature_Sel(df, X, y)
+print(fs_ob.sf)
+
+# model_ob = LModel(fs_ob.X, y)
+
+# model_type can be set to Ordinary, Lasso, and Ridge
+# model_ob.cross_val(k=10, model_type='Ordinary')
+
+# baseline = BaseLine(X, y)
+# baseline.cross_val()
+
+# X, y = preproc.get_raw_X_y()
+# baseline2_ob = LModel(X, y)
+# baseline2 = baseline2_ob.cross_val()
+
 
 col1 = 'HasPhotovoltaics'
 col2 = 'Price'
@@ -162,7 +184,7 @@ col2 = 'Price'
 # eda.plot_cat_cat(col1, col2)
 
 # eda.plot_qqplot('SquareFootageHouse')
-# eda.eda_report('Age')
+# eda.eda_report('DateSinceForSale')
 
 # df = df.astype(float)
 # msno.matrix(df)

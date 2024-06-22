@@ -8,21 +8,34 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error
 import statsmodels.api as sm
 from sklearn.impute import KNNImputer
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import chi2
 
 
 class PreProc:
     def __init__(self, data):
         self.data = data
 
-        clean = Clean(self.data)
-        outlier = Outlier(self.data)
-        missing_v = MissingV(self.data)
-        transform = Transform(self.data)
+        self.clean = Clean(self.data)
+        self.outlier = Outlier(self.data)
+        self.missing_v = MissingV(self.data)
+        self.transform = Transform(self.data)
 
-        missing_v.heatingcosts()
-        transform.heatingcosts()
+        self.missing_v.heatingcosts()
+        self.transform.heatingcosts()
 
-        missing_v.impute_remained()
+        self.missing_v.impute_remained()
+
+        # self.outlier.pca_outlier()
+        # self.outlier.mahalanobis_outlier()
+    
+    def get_transformed_X_y(self):
+        return self.transform.add_features(True)
+    
+    def get_raw_X_y(self):
+        return self.transform.get_features()
 
 class Clean:
     def __init__(self, data):
@@ -80,6 +93,44 @@ class Outlier:
     def price(self):
         threshold = 1000
         self.data.loc[self.data['Price'] > threshold, 'Price'] = np.nan
+
+    def pca_outlier(self):
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(self.data)
+
+        print(self.data.shape)
+        pca = PCA(n_components=2)
+        data_transformed = pca.fit_transform(scaled_features)
+        pca_df = pd.DataFrame(data_transformed, columns=['PCA-1', 'PCA-2'])
+
+        plt.figure(figsize=(10, 8))
+        sns.scatterplot(x='PCA-1', y='PCA-2', data=pca_df, alpha=0.5)
+        plt.title('PCA Visualization of the Housing Data')
+        plt.xlabel('PCA Dimension 1')
+        plt.ylabel('PCA Dimension 2')
+        plt.show()
+
+        print(pca.explained_variance_ratio_)
+        print(np.sum(pca.explained_variance_ratio_))
+
+    def mahalanobis_outlier(self):
+
+        covariance_matrix = np.cov(self.data.astype(float).values.T)
+        inv_covariance_matrix = np.linalg.inv(covariance_matrix)
+        mean = np.mean(self.data.astype(float).values, axis=0)
+
+        def mahalanobis_distance(x):
+            x_minus_mean = x.astype(float) - mean
+            md = np.sqrt(x_minus_mean @ inv_covariance_matrix @ x_minus_mean.T)
+            return md
+
+        results = self.data.apply(mahalanobis_distance, axis=1)
+        results_df = pd.DataFrame(results, columns=['MD'])
+        print(results_df.describe())
+
+        dof = len(self.data.columns)
+        threshold = chi2.ppf(0.99, df=dof)
+        print(threshold)
 
 
 class MissingV:
@@ -206,8 +257,9 @@ class Transform:
 
         self.bedrooms()
         self.bathrooms()
+        self.squarefootagehouse()
         self.location()
-        # self.age()
+        self.age()
         self.poolquality()
         # self.hasphotovoltaics()
         self.heatingtype()
@@ -233,6 +285,12 @@ class Transform:
     def bathrooms(self):
         self.data['Bathrooms'] = self.data['Bathrooms'].astype(pd.Int32Dtype())
 
+    def squarefootagehouse(self):
+        # self.data['SquareFootageHouse'] = self.data['SquareFootageHouse'].apply(np.sqrt)
+        # transformed_data, lambda_value = stats.boxcox(self.data['SquareFootageHouse'])
+        # self.data['SquareFootageHouse'] = transformed_data
+        pass
+
     def location(self):
         self.to_one_hot('Location')
         self.data.drop('Location', axis=1, inplace=True)
@@ -247,10 +305,10 @@ class Transform:
             else:
                 return 1
 
-        ind = self.data.columns.get_loc('Age')
-        new_col = self.data['Age'].apply(binary).astype(pd.Int32Dtype())
+        # ind = self.data.columns.get_loc('Age')
+        # new_col = self.data['Age'].apply(binary).astype(pd.Int32Dtype())
 
-        self.data.insert(ind+1,'Age_binary', new_col)
+        # self.data.insert(ind+1,'Age_binary', new_col)
 
         # def bins(x):
         #     if not pd.isna(x):
@@ -262,7 +320,7 @@ class Transform:
 
         # self.add_bool_col('Age')
 
-        # max_age = self.data['Age'].max()
+        max_age = self.data['Age'].max()
         # self.data['Age'] = self.data['Age'].apply(self.reflect_sqrt, max=max_age)
 
     def poolquality(self):
@@ -290,6 +348,8 @@ class Transform:
             return (mdate.year - x.year) * 12 + (mdate.month - x.month)
             # return mdate.year - x.year
         self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months).astype(pd.Int32Dtype())
+        # self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(self.log, c=2)
+
 
     def housecolor(self):
         self.to_one_hot('HouseColor')
@@ -318,19 +378,24 @@ class Transform:
         self.data['SquareFootageGarden'] = self.data['SquareFootageGarden'].astype(pd.Int32Dtype())
 
     def previousownerrating(self):
-        self.data['PreviousOwnerRating'] = self.data['PreviousOwnerRating'].apply(np.log)
+        # self.data['PreviousOwnerRating'] = self.data['PreviousOwnerRating'].apply(np.log)
+        pass
 
     def heatingcosts(self):
-        self.data['HeatingCosts'] = self.data['HeatingCosts'].apply(np.sqrt)
+        # self.data['HeatingCosts'] = self.data['HeatingCosts'].apply(np.sqrt)
+        pass
 
     def windowmodelnames(self):
         self.to_one_hot('WindowModelNames')
         self.data.drop('WindowModelNames', axis=1, inplace=True)
 
     def price(self):
-        self.data['Price'] = self.data['Price'].apply(np.log)
+        # self.data['Price'] = self.data['Price'].apply(np.log)
+
         # transformed_data, lambda_value = stats.boxcox(self.data['Price'])
         # self.data['Price'] = transformed_data
+        pass
+
 
     def quality_to_quantity(self, col):
         map_dic = {
@@ -366,6 +431,43 @@ class Transform:
         
         new_col = self.data[col].apply(bool_f).astype(pd.Int32Dtype())
         self.data.insert(ind+1, col+'_ismissed', new_col)
+
+    def add_features(self, only_inter):
+        target = 'Price'
+
+        all_cols = list(self.data.columns)
+        all_cols.remove(target)
+        respons = all_cols
+
+        X = self.data[respons]
+        y = self.data[target]
+        y.reset_index(drop=True, inplace=True)
+
+        pf = PolynomialFeatures(degree=2, interaction_only=only_inter, include_bias=True)
+        X = pf.fit_transform(X)
+
+        pf_feature_names = pf.get_feature_names_out(input_features=respons)
+        X = pd.DataFrame(X, columns=list(pf_feature_names))
+
+        return X, y
+    
+    def get_features(self):
+        target = 'Price'
+
+        all_cols = list(self.data.columns)
+        all_cols.remove(target)
+        respons = all_cols
+
+        X = self.data[respons].astype(float)
+        X.reset_index(drop=True, inplace=True)
+
+        y = self.data[target].astype(float)
+        y.reset_index(drop=True, inplace=True)
+
+        return X, y
+
+    def log(self, x, c):
+        return np.log(x + c)
 
         
 class LinearM:
@@ -434,7 +536,6 @@ class LinearM:
                 for part in parts:
                     if part not in feasible_terms:
                         feasible_terms.append(part)
-
             else:
                 break
         
