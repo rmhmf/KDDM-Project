@@ -160,9 +160,10 @@ eda = EDA(df)
 X, y = preproc.get_transformed_X_y()
 
 fs_ob = Feature_Sel(df, X, y)
-print(fs_ob.sf)
 
-# model_ob = LModel(fs_ob.X, y)
+model_ob = LModel(fs_ob.X, y)
+model = model_ob.fit()
+model_ob.without_pool_effect(model, df, fs_ob.X.columns)
 
 # model_type can be set to Ordinary, Lasso, and Ridge
 # model_ob.cross_val(k=10, model_type='Ordinary')

@@ -8,6 +8,8 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import PolynomialFeatures
+from scipy import stats
 
 
 class Feature_Sel:
@@ -120,6 +122,8 @@ class LModel:
 
         print(f"R-squared: {model.rsquared}")
 
+        return y_pred
+
     def fit_and_predict(self, X_train, y_train, X_test, model_type):
         X_train = sm.add_constant(X_train)
         X_test = sm.add_constant(X_test)
@@ -162,6 +166,46 @@ class LModel:
         print(np.mean(MSE))
         print(MAE)
         print(np.mean(MAE))
+
+    def without_pool_effect(self, model, df, sf, only_inter=True):
+        dfc = df.copy()
+        dfc['SquareFootageGarden'] = 6
+        target = 'Price'
+
+        all_cols = list(dfc.columns)
+        all_cols.remove(target)
+        respons = all_cols
+
+        X = dfc[respons]
+        y = dfc[target]
+        y.reset_index(drop=True, inplace=True)
+
+        pf = PolynomialFeatures(degree=2, interaction_only=only_inter, include_bias=True)
+        X = pf.fit_transform(X)
+
+        pf_feature_names = pf.get_feature_names_out(input_features=respons)
+        X = pd.DataFrame(X, columns=list(pf_feature_names))
+        X = X[sf]
+
+        pred = self.evaluate(model, self.X, self.y)
+        pred_without_pool = self.evaluate(model, X, y)
+        price_changes = pred - pred_without_pool
+        print((price_changes).describe())
+        price_changes.to_csv('a.csv')
+        t_statistic, p_value = stats.ttest_rel(pred, pred_without_pool)
+        print(t_statistic)
+        print(p_value)
+
+        sns.set(style="whitegrid")
+        plt.figure(figsize=(8, 5))
+        sns.kdeplot(price_changes, fill=True, color="b", label="Density")
+        plt.axvline(x=0, linestyle="--", color="r", label="No Difference")
+
+        plt.title("Density Function of Differences in Predicted Values")
+        plt.xlabel("Difference")
+        plt.ylabel("Density")
+        plt.legend()
+        plt.show()
 
 
 class BaseLine:
