@@ -12,6 +12,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from scipy import stats
 
 
+# The class that perform feature selection
 class Feature_Sel:
 
     def __init__(self, data, X, y):
@@ -24,6 +25,7 @@ class Feature_Sel:
         self.vif()
         self.linear_fs()
 
+    # selecting feature using mutual information as step 1
     def mutual_info_fs(self):
         threshold = .1
         mi_scores = mutual_info_regression(self.X, self.y)
@@ -42,6 +44,8 @@ class Feature_Sel:
         print(f'Feature size after mutual information: {len(self.sf)}')
         self.X = self.X[self.sf]
 
+    # for the next step use VIF for removing the highly correlated features
+    # as an alternative -the commented code- we could use correlation matrix
     def vif(self):
         # corr_matrix = self.X.corr().abs()
 
@@ -74,6 +78,7 @@ class Feature_Sel:
 
         print(f'Feature size after vif: {len(self.sf)}')
 
+    # For the final step, I fitted a linear model and removed insignificant features
     def linear_fs(self, signif_lev=.05):
 
         # X = sm.add_constant(self.X[self.sf])
@@ -98,6 +103,7 @@ class Feature_Sel:
         print(f'Feature size after linear fs: {len(self.sf)}')
         
 
+# The Linear model class
 class LModel:
 
     def __init__(self, X, y):
@@ -110,6 +116,7 @@ class LModel:
         print(model.summary())
         return model
 
+    # prints MSE, MAE, R-Squared and returns predicted values
     def evaluate(self, model, X, y):
         X = sm.add_constant(X)
         y_pred = model.predict(X)
@@ -124,6 +131,8 @@ class LModel:
 
         return y_pred
 
+    # fits a model given the train data, returns r-squared and predicted values
+    # model type can be set to Ordinary, Lasso, Ridge
     def fit_and_predict(self, X_train, y_train, X_test, model_type):
         X_train = sm.add_constant(X_train)
         X_test = sm.add_constant(X_test)
@@ -142,12 +151,14 @@ class LModel:
         predictions = model.predict(X_test)
         return predictions, rsquared
 
+    # cross validation evaluation on linear model
     def cross_val(self, k=10, model_type='Ordinary'):
         kf = KFold(n_splits=k, shuffle=True, random_state=1)
 
         Rsquared = []
         MSE = []
         MAE = []
+        # Loop through each fold
         for train_index, test_index in kf.split(self.X):
             X_train, X_test = self.X.iloc[train_index], self.X.iloc[test_index]
             y_train, y_test = self.y.iloc[train_index], self.y.iloc[test_index]
@@ -160,13 +171,17 @@ class LModel:
             MSE.append(mse)
             MAE.append(mae)
 
+        print('R-Squared:')
         print(Rsquared)
-        print(np.mean(Rsquared))
+        print(f'mean: {np.mean(Rsquared)}, std: {np.std(Rsquared)}')
+        print('MSE:')
         print(MSE)
-        print(np.mean(MSE))
+        print(f'mean: {np.mean(MSE)}, std: {np.std(MSE)}')
+        print(' MAE')
         print(MAE)
-        print(np.mean(MAE))
+        print(f'mean: {np.mean(MAE)}, std: {np.std(MAE)}')
 
+    # Analyze the effect of PoolQuality feature
     def without_pool_effect(self, model, df, sf, only_inter=True):
         dfc = df.copy()
         dfc['SquareFootageGarden'] = 6
@@ -208,6 +223,7 @@ class LModel:
         plt.show()
 
 
+# a model that always predicts mean of prices
 class BaseLine:
 
     def __init__(self, X, y):
@@ -232,7 +248,9 @@ class BaseLine:
             MSE.append(mse)
             MAE.append(mae)
 
+        print('MSE:')
         print(MSE)
-        print(np.mean(MSE))
+        print(f'mean: {np.mean(MSE)}, std: {np.std(MSE)}')
+        print(' MAE')
         print(MAE)
-        print(np.mean(MAE))
+        print(f'mean: {np.mean(MAE)}, std: {np.std(MAE)}')

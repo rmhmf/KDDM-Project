@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import preproc
+from preproc import PreProc
 import statsmodels.api as sm
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import missingno as msno
@@ -29,16 +29,17 @@ class Data:
         print(self.data.describe())
         print(self.data.head())
 
-
+# Explainatory Data Analysis
 class EDA:
     def __init__(self, data):
         self.data = data
 
     def eda_report(self, col):
         self.statistic_print(col)
-        self.visual_missing_value(col)
+        # self.visual_missing_value(col)
         self.plot_boxplot(col)
         self.plot_count_bar(col)
+        self.hist_plot(col)
 
     def plot_corr(self, data=None):
         numerical_data = self.data.select_dtypes(include=['float64', 'Int32', 'Float64'])
@@ -61,13 +62,14 @@ class EDA:
             print(f'Number of missing values: {self.data[col].isnull().value_counts()}')
         else:
             sns.heatmap(self.data.isnull(), cbar=False, cmap='viridis')
-        plt.xticks(rotation=60, ha='right', fontsize=14)
+        plt.xticks(rotation=30, ha='right', fontsize=12)
         plt.title('Heatmap of Missing Values', fontsize=20)
-        plt.tight_layout(pad=2.0)
+        plt.yticks([])
+        plt.tight_layout(pad=5.0)
         plt.show()
 
     def plot_boxplot(self, col=None):
-        plt.figure(figsize=(12, 10))
+        plt.figure(figsize=(8, 4))
         if col:
             sns.boxplot(data=self.data, x=col)
         else:
@@ -75,7 +77,7 @@ class EDA:
         plt.title(f'Boxplot of Column(s)')
         plt.xticks(rotation=60, ha='right', fontsize=14)
         plt.ylabel('Values')
-        plt.tight_layout(pad=2.0)
+        plt.tight_layout(pad=5.0)
         plt.show()
 
     def plot_count_bar(self, col):
@@ -89,8 +91,7 @@ class EDA:
             # sns.countplot(data=self.data[col].value_counts)
             value_counts = self.data[col].value_counts().reset_index()
             value_counts.columns = [col, 'count']
-            
-            # Use sns.barplot to plot the counts
+
             sns.barplot(x=col, y='count', data=value_counts)
 
         plt.title(f"Bar chart of column {col}", fontsize=18)
@@ -146,58 +147,69 @@ class EDA:
         plt.ylabel(col2)
         plt.show()
 
+    def hist_plot(self, col):
+        sns.histplot(self.data[col], kde=True)
+        plt.title(f'Histogram of {col}')
+        plt.xlabel('Value')
+        plt.ylabel('Frequency')
+        plt.show()
+
+    def pair_plot(self, target_column):
+        plot_data = df[[target_column] + [col for col in df.columns if col != target_column]]
+
+        sns.pairplot(plot_data, kind='scatter')
+        sns.pairplot(df, hue='Age', diag_kind='scatter')
+        plt.tight_layout(pad=8.0)
+        plt.show()
+
 data = Data()
-# data.data_desc()
+data.data_desc()
 df = data.get_data()
 
-preproc = preproc.PreProc(df)
-data.save_data("preprocV0.1.csv")
+# perform pre-processing and save the pre-pocessed file
+preproc = PreProc(df)
+data.save_data("preprocessed.csv")
 
 eda = EDA(df)
-# eda.visual_missing_value()
-# eda.plot_corr()
 
+eda.visual_missing_value()
+eda.plot_corr()
+
+feature = 'HeatingCosts'
+eda.eda_report(feature)
+
+# get Polynomial Features X, add interaction terms
+# y is the target: Price
 X, y = preproc.get_transformed_X_y()
 
 fs_ob = Feature_Sel(df, X, y)
 
 model_ob = LModel(fs_ob.X, y)
 model = model_ob.fit()
+
+# analyzing the effect of pool_quality feature
 model_ob.without_pool_effect(model, df, fs_ob.X.columns)
 
 # model_type can be set to Ordinary, Lasso, and Ridge
-# model_ob.cross_val(k=10, model_type='Ordinary')
+model_ob.cross_val(k=10, model_type='Ordinary')
 
-# baseline = BaseLine(X, y)
-# baseline.cross_val()
+# baseline always predicts mean of prices.
+baseline = BaseLine(X, y)
+baseline.cross_val()
 
-# X, y = preproc.get_raw_X_y()
-# baseline2_ob = LModel(X, y)
-# baseline2 = baseline2_ob.cross_val()
+# baseline2 is a linear model on raw features
+X, y = preproc.get_raw_X_y()
+baseline2_ob = LModel(X, y)
+baseline2 = baseline2_ob.cross_val()
 
-
-col1 = 'HasPhotovoltaics'
+# figures of two features
+col1 = 'Bedrooms'
 col2 = 'Price'
-# eda.statistic_print(col1, col2)
+eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
-# eda.plot_barplot(col1, col2)
-# eda.plot_violin(col1, col2)
+eda.plot_barplot(col1, col2)
+eda.plot_violin(col1, col2)
 # eda.plot_cat_cat(col1, col2)
 
-# eda.plot_qqplot('SquareFootageHouse')
-# eda.eda_report('DateSinceForSale')
-
-# df = df.astype(float)
-# msno.matrix(df)
-# plt.show()
-# msno.heatmap(df)
-# plt.show()
-
-# target_column = "Age"
-# plot_data = df[[target_column] + [col for col in df.columns if col != target_column]]
-
-# Create pair plots using seaborn
-# sns.pairplot(plot_data, kind='scatter')
-# sns.pairplot(df, hue='Age', diag_kind='scatter')
-# plt.tight_layout(pad=8.0)
-# plt.show()
+# plot qq-plot of feature: SquareFootageHouse
+eda.plot_qqplot('SquareFootageHouse')

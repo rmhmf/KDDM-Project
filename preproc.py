@@ -5,7 +5,7 @@ from sklearn.preprocessing import PowerTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 import statsmodels.api as sm
 from sklearn.impute import KNNImputer
 from sklearn.decomposition import PCA
@@ -14,6 +14,7 @@ import seaborn as sns
 from scipy.stats import chi2
 
 
+# class for pre-processing
 class PreProc:
     def __init__(self, data):
         self.data = data
@@ -31,12 +32,16 @@ class PreProc:
         # self.outlier.pca_outlier()
         # self.outlier.mahalanobis_outlier()
     
-    def get_transformed_X_y(self):
-        return self.transform.add_features(True)
+    # add binomial terms to the features
+    def get_transformed_X_y(self, only_interactions=True):
+        return self.transform.add_features(only_interactions)
     
+    # returns features X as predictors and price as y, is response
     def get_raw_X_y(self):
         return self.transform.get_features()
 
+
+# class for performing data cleaning
 class Clean:
     def __init__(self, data):
         self.data = data
@@ -46,16 +51,19 @@ class Clean:
         self.heatingtype()
         self.windowmodelnames()
 
+    # removing empty rows
     def remove_empty_rows(self):
         print(f"{self.data.isnull().all(axis=1).sum()} number of rows has been deleted.")
         self.data.dropna(how='all', inplace=True)
 
+    # Fix misspelling in location
     def location(self):
         location_misspell = {
             'Suburbann': 'Suburban'
         }
         self.data['Location'] = self.data['Location'].replace(location_misspell)
 
+    # make the values of HeatingType homogenous
     def heatingtype(self):
         unified_name = {
             'Oil Heating': 'Oil',
@@ -63,12 +71,14 @@ class Clean:
         }
         self.data['HeatingType'] = self.data['HeatingType'].replace(unified_name)
 
+    # reduce the values to the type of window: Wood, Steel, Aluminum
     def windowmodelnames(self):
         self.data.loc[self.data['WindowModelNames'].str.contains('Wood'), 'WindowModelNames'] = 'Wood'
         self.data.loc[self.data['WindowModelNames'].str.contains('Steel'), 'WindowModelNames'] = 'Steel'
         self.data.loc[self.data['WindowModelNames'].str.contains('Aluminum'), 'WindowModelNames'] = 'Aluminum'
 
 
+# Class to address outliers
 class Outlier:
     def __init__(self, data):
         self.data = data
@@ -94,6 +104,7 @@ class Outlier:
         threshold = 1000
         self.data.loc[self.data['Price'] > threshold, 'Price'] = np.nan
 
+    # Use PCA to identify multivariate outliers
     def pca_outlier(self):
         scaler = StandardScaler()
         scaled_features = scaler.fit_transform(self.data)
@@ -113,6 +124,7 @@ class Outlier:
         print(pca.explained_variance_ratio_)
         print(np.sum(pca.explained_variance_ratio_))
 
+    # Use mahalanobis distance to detect outliers
     def mahalanobis_outlier(self):
 
         covariance_matrix = np.cov(self.data.astype(float).values.T)
@@ -133,6 +145,7 @@ class Outlier:
         print(threshold)
 
 
+# class for missing value imputation
 class MissingV:
     def __init__(self, data):
         self.data = data
@@ -142,6 +155,7 @@ class MissingV:
         self.hasphotovoltaics()
         self.previousownername()
 
+    # Use base rule to impute missing values using SquareFootageHouse
     def bedrooms(self):
         # Using the correlation between Bedrooms and SquareFootageHouse
         stat = self.data.groupby('Bedrooms')['SquareFootageHouse'].agg(['mean', 'std']).to_numpy()
@@ -160,6 +174,7 @@ class MissingV:
         
         self.data['Bedrooms'] = self.data.apply(predic_label, axis=1)
 
+    # Use base rule to impute missing values using SquareFootageHouse
     def bathrooms(self):
         # Using the correlation between Bathrooms and SquareFootageHouse
         stat = self.data.groupby('Bathrooms')['SquareFootageHouse'].agg(['mean', 'std']).to_numpy()
@@ -178,6 +193,7 @@ class MissingV:
         
         self.data['Bathrooms'] = self.data.apply(predic_label, axis=1)
 
+    # Use SquareFootageGarden to impute missing values of PoolQuality
     def poolquality(self):
         def fill_mar(row):
             if row['SquareFootageGarden'] == 6:
@@ -191,6 +207,8 @@ class MissingV:
 
         self.data['PoolQuality'] = self.data.apply(fill_mar, axis=1)
 
+    # fit a linear model for imputing missing values of HeatingCosts
+    # using three predictors 'SquareFootageHouse', 'HeatingType_Oil', 'Price'
     def heatingcosts(self):
         respons = ['SquareFootageHouse', 'HeatingType_Oil', 'Price']
         lm = LinearM(self.data, 'OLS', "HeatingCosts", respons)
@@ -219,12 +237,15 @@ class MissingV:
             
         self.data['HeatingCosts'] = self.data.apply(impute, axis=1)
 
+    # drop the column HasPhotovoltaics
     def hasphotovoltaics(self):
         self.data.drop('HasPhotovoltaics', axis=1, inplace=True)
 
+    # drop the feature PreviousOwnerName
     def previousownername(self):
         self.data.drop('PreviousOwnerName', axis=1, inplace=True)
 
+    # Use KNN to address the remaining missing values
     def impute_remained(self):
         col_rep = ['HouseColor_Gray', 'HouseColor_Green', 'HouseColor_White', 'HouseColor_Yellow']
         self.knn_impute(col_rep, 1, int)
@@ -237,6 +258,7 @@ class MissingV:
         col_rep = ['HeatingCosts', 'Price']
         self.knn_impute(col_rep, 3, float)
 
+    # Knn to impute missing variables of col_rep features
     def knn_impute(self, col_rep, n, type):
         imputer = KNNImputer(n_neighbors=n)
         
@@ -251,6 +273,7 @@ class MissingV:
         self.data.loc[miss_ind, col_rep] = imputed_df.loc[miss_ind, col_rep]
         
 
+# class for performing feature transformation
 class Transform:
     def __init__(self, data):
         self.data = data
@@ -279,22 +302,27 @@ class Transform:
         self.windowmodelnames()
         self.price()
 
+    # transform bedrooms to Integer
     def bedrooms(self):
         self.data['Bedrooms'] = self.data['Bedrooms'].astype(pd.Int32Dtype())
 
+    # transform bathroom to Integer
     def bathrooms(self):
         self.data['Bathrooms'] = self.data['Bathrooms'].astype(pd.Int32Dtype())
 
+    # some feature transformation tested, at the end I left the feature as was
     def squarefootagehouse(self):
         # self.data['SquareFootageHouse'] = self.data['SquareFootageHouse'].apply(np.sqrt)
         # transformed_data, lambda_value = stats.boxcox(self.data['SquareFootageHouse'])
         # self.data['SquareFootageHouse'] = transformed_data
         pass
 
+    # transformed location as a categorical data to one-hot encoding
     def location(self):
         self.to_one_hot('Location')
         self.data.drop('Location', axis=1, inplace=True)
 
+    # many transformations tested, at the end I left the feature as was
     def age(self):
 
         def binary(x):
@@ -323,23 +351,29 @@ class Transform:
         max_age = self.data['Age'].max()
         # self.data['Age'] = self.data['Age'].apply(self.reflect_sqrt, max=max_age)
 
+    # ordinal encoding
     def poolquality(self):
         self.quality_to_quantity('PoolQuality')
         
+    # transform bool to 0-1
     def hasphotovoltaics(self):
         self.data['HasPhotovoltaics'] = self.data['HasPhotovoltaics'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
         # self.add_bool_col('HasPhotovoltaics')
 
+    # transformed HeatingType as a categorical data to one-hot encoding
     def heatingtype(self):
         self.to_one_hot('HeatingType')
         self.data.drop('HeatingType', axis=1, inplace=True)
 
+    # transform bool to 0-1
     def hasfiberglass(self):
         self.data['HasFiberglass'] = self.data['HasFiberglass'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
 
+    # transform bool to 0-1
     def isfurnished(self):
         self.data['IsFurnished'] = self.data['IsFurnished'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
 
+    # transform the date to the number of month that has passed since the last date
     def datesinceforsale(self):
         self.data['DateSinceForSale'] = pd.to_datetime(self.data['DateSinceForSale'], format="%Y-%m-%d")
         mdate = self.data['DateSinceForSale'].max()
@@ -350,45 +384,58 @@ class Transform:
         self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(to_months).astype(pd.Int32Dtype())
         # self.data['DateSinceForSale'] = self.data['DateSinceForSale'].apply(self.log, c=2)
 
-
+    # transformed HouseColor as a categorical data to one-hot encoding
     def housecolor(self):
         self.to_one_hot('HouseColor')
         self.data.drop('HouseColor', axis=1, inplace=True)
 
+    # at the end I dropped the feature
     def previousownername(self):
         # self.to_one_hot('PreviousOwnerName')
         self.data.drop('PreviousOwnerName', axis=1, inplace=True)
 
+    # transform bool to 0-1
     def hasfireplace(self):
         self.data['HasFireplace'] = self.data['HasFireplace'].map({True: 1, False: 0}).astype(pd.Int32Dtype())
     
+    # ordinal encoding
     def kitchensquality(self):
         self.quality_to_quantity('KitchensQuality')
 
+    # ordinal encoding
     def bathroomsquality(self):
         self.quality_to_quantity('BathroomsQuality')
 
+    # ordinal encoding
     def bedroomsquality(self):
         self.quality_to_quantity('BedroomsQuality')
 
+    # ordinal encoding
     def livingroomsquality(self):
         self.quality_to_quantity('LivingRoomsQuality')
 
+    # transform it to Int type
     def squarefootagegarden(self):
         self.data['SquareFootageGarden'] = self.data['SquareFootageGarden'].astype(pd.Int32Dtype())
 
+    # at the end I left the feature as was
+    # It was a bit right skewed, so I thought maybe transforming by log get better results, which didn't
     def previousownerrating(self):
         # self.data['PreviousOwnerRating'] = self.data['PreviousOwnerRating'].apply(np.log)
         pass
 
+    # at the end I left the feature as was
+    # It was a bit right skewed, so I thought maybe transforming by sqrt get better results, which didn't
     def heatingcosts(self):
         # self.data['HeatingCosts'] = self.data['HeatingCosts'].apply(np.sqrt)
         pass
 
+    # transformed WindowModelNames as a categorical data to one-hot encoding
     def windowmodelnames(self):
         self.to_one_hot('WindowModelNames')
         self.data.drop('WindowModelNames', axis=1, inplace=True)
 
+    # I tried different feature transformation, at the end I left it as was
     def price(self):
         # self.data['Price'] = self.data['Price'].apply(np.log)
 
@@ -396,7 +443,7 @@ class Transform:
         # self.data['Price'] = transformed_data
         pass
 
-
+    # Transform quality feature to numeric
     def quality_to_quantity(self, col):
         map_dic = {
             'NoPool': 0,
@@ -406,6 +453,7 @@ class Transform:
         }
         self.data[col] = self.data[col].map(map_dic).astype(pd.Int32Dtype())
 
+    # transform categorical feature to one-hot encoding
     def to_one_hot(self, col):
         loc_ind = self.data.columns.get_loc(col)
         one_hot_cols = pd.get_dummies(self.data[col], prefix=col, dtype=int)
@@ -418,9 +466,12 @@ class Transform:
         for i, col in enumerate(one_hot_cols.columns):
             self.data.insert(loc_ind + i, col, one_hot_cols[col])
 
+    # transformation for left skewed data
     def reflect_sqrt(self, x, max):
         return np.sqrt(max + 1 - x)
 
+    # add a boolean feature that is 1 whenever col is missed
+    # I used this feature to see if the missing values are dependent on something
     def add_bool_col(self, col):
         ind = self.data.columns.get_loc(col)
         def bool_f(x):
@@ -432,6 +483,7 @@ class Transform:
         new_col = self.data[col].apply(bool_f).astype(pd.Int32Dtype())
         self.data.insert(ind+1, col+'_ismissed', new_col)
 
+    # adds binomial terms to feature and returns it as X, also return response y -Price-
     def add_features(self, only_inter):
         target = 'Price'
 
@@ -451,6 +503,7 @@ class Transform:
 
         return X, y
     
+    # returns raw features X and response y
     def get_features(self):
         target = 'Price'
 
@@ -469,7 +522,8 @@ class Transform:
     def log(self, x, c):
         return np.log(x + c)
 
-        
+
+# Linear model for missing value imputation
 class LinearM:
 
     def __init__(self, data, method, target, respons=None):
@@ -484,15 +538,20 @@ class LinearM:
             self.respons = respons
         self.target = target
     
+    # get coulumns that have no missing value
     def columns_without_nan(self, cols):
         columns_without_nan = self.data.columns[self.data.notna().all()].tolist()
         return columns_without_nan
 
+    # drop rows with missing values
     def drop_nan(self):
         valued_df = self.data[self.respons+[self.target]].dropna().astype(float)
         valued_df.reset_index(inplace=True)
         return valued_df
 
+    # adds interaction terms of features
+    # performs feature selection that does not violate ANOVA
+    # return the final model
     def feature_selection(self, signif_lev=.05):
 
         df = self.drop_nan()
@@ -513,6 +572,7 @@ class LinearM:
         feasible_terms = interaction_terms.copy()
         best_features = all_features.copy()
 
+        # remove insignificat features one by one
         while len(best_features) > 1:
             
             phi = X[best_features]
@@ -538,5 +598,5 @@ class LinearM:
                         feasible_terms.append(part)
             else:
                 break
-        
+
         return model, best_features

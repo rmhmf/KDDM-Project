@@ -136,8 +136,4 @@ for i in range(cluster_num):
     corr = df[kmeans.labels_ == i].corr().round(1)
     sns.heatmap(corr, ax=axes[i], cmap='coolwarm', annot=True)
     axes[i].set_title(f'Correlation Matrix for class {i}')
-# plt.show()
-
-
-X_train = odf[sf]
-
+plt.show()
