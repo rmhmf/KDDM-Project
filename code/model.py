@@ -206,7 +206,7 @@ class LModel:
         pred_without_pool = self.evaluate(model, X, y)
         price_changes = pred - pred_without_pool
         print((price_changes).describe())
-        price_changes.to_csv('a.csv')
+        # price_changes.to_csv('a.csv')
         t_statistic, p_value = stats.ttest_rel(pred, pred_without_pool)
         print(t_statistic)
         print(p_value)

@@ -208,7 +208,7 @@ col2 = 'Price'
 eda.statistic_print(col1, col2)
 # eda.plot_scatter(col1, col2)
 eda.plot_barplot(col1, col2)
-eda.plot_violin(col1, col2)
+# eda.plot_violin(col1, col2)
 # eda.plot_cat_cat(col1, col2)
 
 # plot qq-plot of feature: SquareFootageHouse
