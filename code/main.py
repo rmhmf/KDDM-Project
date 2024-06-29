@@ -9,6 +9,7 @@ import missingno as msno
 from model import Feature_Sel, LModel, BaseLine
 
 
+# class for load, save, and get the data
 class Data:
     def __init__(self):
         self.dir = "data/data_6.csv"
